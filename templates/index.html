@@ -26,6 +26,11 @@
         {% if plot %}
         <img src="{{ url_for('static', filename='plot.png') }}" alt="Stock Chart" class="img-fluid">
         {% endif %}
+
+        <h2>{{ symbol }} plotlyローソクチャート</h2>
+        <div>
+            {{ chart_html | safe }}
+        </div>
         
         {% if table_html %}
             <div class="table-responsive">
