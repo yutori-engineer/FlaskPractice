@@ -21,8 +21,6 @@ def index():
     if request.method == 'POST':
         symbol = request.form['symbol']
         data = get_stock_data(symbol)
-        plot_png(data, symbol)
-        # chart_html = create_candlestick_chart(data, symbol) 
         chart_html = create_candlestick_with_volume(data, symbol)       
         if data is not None:            # データを日付でソートし、順序を逆にする
             data = data.sort_index(ascending=False)
@@ -33,66 +31,27 @@ def index():
 def get_stock_data(symbol):
     try:
         ticker = Ticker(symbol + '.T')
-        df = ticker.history(period='1y',interval='1d') #(period='1y', interval='1d')
+        df = ticker.history(period='1y',interval='1d')
+        # インデックスをリセットしてdate列を作成
+        df = df.reset_index()
+        # date列の名前を確認して変更
+        if 'date' not in df.columns:
+            df = df.rename(columns={df.columns[0]: 'date'})
         return df
-    
+
     except Exception as e:
         print(f"エラーが発生しました: {e}")
         return None
-
-def plot_png(data, symbol):
-    # キャンドルスティックチャートのためにデータを整形
-    data.reset_index(inplace=True)
-    data.set_index('date', inplace=True)
-    data.index = pd.to_datetime(data.index)
-
-    # プロット画像を static フォルダに保存
-    plot_path = os.path.join('static', 'plot.png')
-    
-    # フィギュアサイズを大きくする
-    fig_size = (30, 10)  # 幅20インチ、高さ10インチ
-    
-    # # スタイル設定
-    # mc = mpf.make_marketcolors(up='r', down='g', inherit=True)
-    # s = mpf.make_mpf_style(marketcolors=mc, gridstyle=':', y_on_right=False, rc={"font.family":'IPAexGothic'})
-    s  = mpf.make_mpf_style(base_mpf_style='yahoo', rc={"font.family":'IPAexGothic'})
-
-    # プロット
-    mpf.plot(data, type='candle', style=s, title=f'{symbol} -日足チャート',
-             ylabel='Price', volume=True, figsize=fig_size, show_nontrading=True,
-             tight_layout = True, mav=(5,20,60),
-             savefig=dict(fname=plot_path, dpi=100, bbox_inches='tight'))
-    
-def create_candlestick_chart(df, symbol):
-    # print("データフレームの列:", df.columns)  # 利用可能な列名を確認
-    df = df.reset_index()
-    # print("リセット後の列:", df.columns)  # リセット後の列名を確認
-    fig = go.Figure(data=[
-        go.Candlestick(
-            x=df["date"],
-            open=df["open"],
-            high=df["high"],
-            low=df["low"],
-            close=df["close"],
-            name=symbol
-        )
-    ])
-    fig.update_layout(
-        title=f"{symbol} 日足ローソクチャート",
-        xaxis_title="日付",
-        yaxis_title="株価（円）",
-        xaxis_rangeslider_visible=False,
-        template="plotly_white",
-        height=600
-    )
-
-    # HTML文字列としてチャートを返す
-    return pio.to_html(fig, full_html=False)
 
 def create_candlestick_with_volume(df, symbol):
     # インデックスをリセットしてdate列を作成
     df = df.reset_index()
     
+    # --- 移動平均線の計算 ---
+    df["MA5"] = df["close"].rolling(window=5).mean()
+    df["MA20"] = df["close"].rolling(window=20).mean()
+    df["MA60"] = df["close"].rolling(window=60).mean()
+
     fig = go.Figure()
 
     # --- ローソク足 ---
@@ -106,6 +65,32 @@ def create_candlestick_with_volume(df, symbol):
         yaxis="y1"
     ))
 
+    # 移動平均線（5日）
+    fig.add_trace(go.Scatter(
+        x=df["date"],
+        y=df["MA5"],
+        mode="lines",
+        line=dict(color="blue", width=1.5),
+        name="5日移動平均"
+    ))
+
+    # 移動平均線（20日）
+    fig.add_trace(go.Scatter(
+        x=df["date"],
+        y=df["MA20"],
+        mode="lines",
+        line=dict(color="red", width=1.5),
+        name="20日移動平均"
+    ))
+    
+        # 移動平均線（60日）
+    fig.add_trace(go.Scatter(
+        x=df["date"],
+        y=df["MA60"],
+        mode="lines",
+        line=dict(color="green", width=1.5),
+        name="60日移動平均"
+    ))
     # --- 出来高（棒グラフ） ---
     fig.add_trace(go.Bar(
         x=df["date"],
