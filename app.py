@@ -2,10 +2,6 @@ import os
 from flask import Flask, render_template, request
 from yahooquery import Ticker
 import pandas as pd
-import matplotlib
-matplotlib.use('Agg')
-import mplfinance as mpf
-import japanize_matplotlib 
 import plotly.graph_objects as go
 import plotly.io as pio
 
