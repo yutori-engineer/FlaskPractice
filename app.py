@@ -32,25 +32,25 @@ def get_stock_data(symbol):
     try:
         ticker = Ticker(symbol + '.T')
         df = ticker.history(period='1y',interval='1d')
-        # インデックスをリセットしてdate列を作成
+        # インデックスをリセットしてdate列を作成(元データはsymbolとdateの複合インデックス)
         df = df.reset_index()
+        
         # date列の名前を確認して変更
         if 'date' not in df.columns:
             df = df.rename(columns={df.columns[0]: 'date'})
+            
+        # --- 移動平均線の計算 ---
+        df["MA5"] = df["close"].rolling(window=5).mean()
+        df["MA20"] = df["close"].rolling(window=20).mean()
+        df["MA60"] = df["close"].rolling(window=60).mean()
+        
         return df
-
+    
     except Exception as e:
         print(f"エラーが発生しました: {e}")
         return None
 
 def create_candlestick_with_volume(df, symbol):
-    # インデックスをリセットしてdate列を作成
-    df = df.reset_index()
-    
-    # --- 移動平均線の計算 ---
-    df["MA5"] = df["close"].rolling(window=5).mean()
-    df["MA20"] = df["close"].rolling(window=20).mean()
-    df["MA60"] = df["close"].rolling(window=60).mean()
 
     fig = go.Figure()
 
