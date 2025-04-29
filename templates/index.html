@@ -18,11 +18,32 @@
                 <button type="submit" class="btn btn-primary">検索</button>
             </div>
         </form>
-
+        
         <h2>{{ symbol }} チャート</h2>
-        <div>
+        <div class="mb-3">
+            <button id="toggleMA" class="btn btn-secondary">移動平均線を表示</button>
+        </div>
+        <div id="chartContainer">
             {{ chart_html | safe }}
         </div>
+        
+        {% if financial_html %}
+            <div class="mt-4">
+                <h3 class="mb-3">株価KPI</h3>
+                <div class="financial-tables-container">
+                    {{ financial_html | safe }}
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if financial_data_raw_html %}
+            <div class="mt-4">
+                <h3 class="mb-3">財務データ</h3>
+                <div class="table-responsive">
+                    {{ financial_data_raw_html | safe }}
+                </div>
+            </div>
+        {% endif %}
         
         {% if table_html %}
             <div class="mt-3">
