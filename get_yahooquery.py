@@ -1,7 +1,7 @@
 from yahooquery import Ticker
 import pandas as pd
 
-def get_stock_data(symbol, period='1y', interval='1d'):
+def get_stock_history(symbol, period='1y', interval='1d'):
     try:
         ticker = Ticker(symbol + '.T')
         df = ticker.history(period=period, interval=interval)

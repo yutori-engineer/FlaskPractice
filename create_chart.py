@@ -22,6 +22,40 @@ def create_candlestick_with_volume(data, symbol, target_prices=None):
         row=1, col=1
     )
     
+    # 移動平均線を追加
+    fig.add_trace(
+        go.Scatter(
+            x=data['date'],
+            y=data['MA5'],
+            name='5日移動平均',
+            line=dict(color='black', width=1),
+            visible=False
+        ),
+        row=1, col=1
+    )
+    
+    fig.add_trace(
+        go.Scatter(
+            x=data['date'],
+            y=data['MA20'],
+            name='20日移動平均',
+            line=dict(color='black', width=1),
+            visible=False
+        ),
+        row=1, col=1
+    )
+    
+    fig.add_trace(
+        go.Scatter(
+            x=data['date'],
+            y=data['MA60'],
+            name='60日移動平均',
+            line=dict(color='black', width=1),
+            visible=False
+        ),
+        row=1, col=1
+    )
+    
     # 目標価格の水平線を追加
     if target_prices:
         colors = {
@@ -49,7 +83,7 @@ def create_candlestick_with_volume(data, symbol, target_prices=None):
                     y1=price,
                     line=dict(
                         color=colors[key],
-                        width=2,
+                        width=1.5,
                         dash="dash",
                     ),
                     name=labels[key],
@@ -88,7 +122,7 @@ def create_candlestick_with_volume(data, symbol, target_prices=None):
     # レイアウトを設定
     fig.update_layout(
         title=f'{symbol} 株価チャート',
-        yaxis_title='価格',
+        yaxis_title='株価',
         xaxis_rangeslider_visible=False,
         height=800,
         showlegend=True
@@ -104,7 +138,7 @@ def create_candlestick_with_volume(data, symbol, target_prices=None):
     
     # Y軸の設定
     fig.update_yaxes(
-        title_text="価格", 
+        title_text="株価", 
         row=1, col=1,
         title_standoff=0,
         side="right"

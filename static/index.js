@@ -1,20 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // テーブルの表示/非表示
-    const toggleButton = document.getElementById('toggleTable');
-    const tableContainer = document.getElementById('tableContainer');
-    
-    if (toggleButton && tableContainer) {
-        toggleButton.addEventListener('click', function() {
-            if (tableContainer.style.display === 'none') {
-                tableContainer.style.display = 'block';
-                toggleButton.textContent = 'テーブルを非表示';
-            } else {
-                tableContainer.style.display = 'none';
-                toggleButton.textContent = 'テーブルを表示';
-            }
-        });
-    }
-
     // 移動平均線の表示/非表示
     const toggleMAButton = document.getElementById('toggleMA');
     const chartContainer = document.getElementById('chartContainer');
@@ -38,6 +22,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     toggleMAButton.textContent = '移動平均線を表示';
                 }
+            }
+        });
+        
+    }
+    // テーブルの表示/非表示
+    const toggleButton = document.getElementById('toggleTable');
+    const tableContainer = document.getElementById('tableContainer');
+    
+    if (toggleButton && tableContainer) {
+        toggleButton.addEventListener('click', function() {
+            if (tableContainer.style.display === 'none') {
+                tableContainer.style.display = 'block';
+                toggleButton.textContent = 'テーブルを非表示';
+            } else {
+                tableContainer.style.display = 'none';
+                toggleButton.textContent = 'テーブルを表示';
             }
         });
     }

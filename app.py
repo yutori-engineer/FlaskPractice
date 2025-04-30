@@ -1,36 +1,11 @@
 import os
 from flask import Flask, render_template, request
 import pandas as pd
-from get_yahooquery import get_stock_data, get_financial_data, get_all_financial_data
+from get_yahooquery import get_stock_history, get_financial_data, get_all_financial_data
 from create_chart import create_candlestick_with_volume
+from translations import COLUMN_TRANSLATIONS
 
 app = Flask(__name__)
-
-# 列名の日本語翻訳辞書
-COLUMN_TRANSLATIONS = {
-    'currentPrice': '現在の株価',
-    'targetHighPrice': '目標高値',
-    'targetLowPrice': '目標安値',
-    'targetMeanPrice': '目標平均価格',
-    'targetMedianPrice': '目標中央価格',
-    'recommendationMean': '推奨平均',
-    'recommendationKey': '推奨',
-    'numberOfAnalystOpinions': 'アナリスト意見数',
-    'totalCash': '現金総額',
-    'totalDebt': '負債総額',
-    'totalRevenue': '総収益',
-    'revenueGrowth': '収益成長率',
-    'grossProfits': '粗利益',
-    'freeCashflow': 'フリーキャッシュフロー',
-    'operatingCashflow': '営業キャッシュフロー',
-    'earningsGrowth': '利益成長率',
-    'grossMargins': '粗利益率',
-    'ebitdaMargins': 'EBITDAマージン',
-    'operatingMargins': '営業利益率',
-    'profitMargins': '純利益率',
-    'returnOnAssets': '総資産利益率',
-    'returnOnEquity': '自己資本利益率'
-}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -42,13 +17,13 @@ def index():
     
     if request.method == 'POST':
         symbol = request.form['symbol']
-        data = get_stock_data(symbol, period='1y', interval='1d')
+        history_data = get_stock_history(symbol, period='1y', interval='1d')
         financial_data = get_financial_data(symbol)
         all_financial_data = get_all_financial_data(symbol)
         
         # 目標株価のデータを準備
         target_prices = {}
-        if financial_data is not None:
+        if financial_data is not None and not financial_data.empty:
             target_prices = {
                 'targetHighPrice': financial_data['targetHighPrice'].iloc[0] if 'targetHighPrice' in financial_data.columns else None,
                 'targetLowPrice': financial_data['targetLowPrice'].iloc[0] if 'targetLowPrice' in financial_data.columns else None,
@@ -56,20 +31,23 @@ def index():
                 'targetMedianPrice': financial_data['targetMedianPrice'].iloc[0] if 'targetMedianPrice' in financial_data.columns else None
             }
         
-        chart_html = create_candlestick_with_volume(data, symbol, target_prices)       
+        chart_html = create_candlestick_with_volume(history_data, symbol, target_prices)       
         
-        if data is not None:
+        if history_data is not None and not history_data.empty:
             # データを日付でソートし、順序を逆にする
-            data = data.sort_index(ascending=False)
-            table_html = data.to_html(classes='table table-striped table-hover table-sm', index=True)
+            history_data = history_data.sort_index(ascending=False)
+            table_html = history_data.to_html(classes='table table-striped table-hover table-sm', index=True)
+            all_financial_data = all_financial_data.sort_values('asOfDate', ascending=False)
             
             # 財務データをHTMLテーブルに変換
-            if financial_data is not None:
-                # 生の財務データをHTMLに変換
-                financial_data_raw_html = all_financial_data.to_html(classes='table table-striped table-hover table-sm')
-                
+            if financial_data is not None and not financial_data.empty:
                 # 列名を日本語に変換
-                financial_data = financial_data.rename(columns=COLUMN_TRANSLATIONS)
+                financial_data = financial_data.rename(columns=COLUMN_TRANSLATIONS)         
+                all_financial_data = all_financial_data.rename(columns=COLUMN_TRANSLATIONS)
+
+                # 生の財務データをHTMLに変換
+                if all_financial_data is not None and not all_financial_data.empty:
+                    financial_data_raw_html = all_financial_data.to_html(classes='table table-striped table-hover table-sm')
                 
                 # 数値のフォーマットを設定
                 for col in financial_data.columns:
