@@ -19,7 +19,7 @@
             </div>
         </form>
         
-        <h2>{{ symbol }} チャート</h2>
+        <h2>{{ symbol }} 日足チャート</h2>
         <div class="mb-3">
             <button id="toggleMA" class="btn btn-secondary">移動平均線を表示</button>
         </div>
@@ -38,8 +38,9 @@
         
         {% if financial_data_raw_html %}
             <div class="mt-4">
+                <button id="toggleFinancialDataRawTableButton" class="btn btn-secondary">財務データを表示</button>
                 <h3 class="mb-3">財務データ</h3>
-                <div class="table-responsive">
+                <div  id="financialRawDataTableContainer" class="table-responsive" style="display: none;">
                     {{ financial_data_raw_html | safe }}
                 </div>
             </div>
@@ -48,11 +49,28 @@
         {% if table_html %}
             <div class="mt-3">
                 <button id="toggleTable" class="btn btn-secondary">テーブルを表示</button>
+                <h3 class="mb-3">日々株価</h3>
             </div>
             <div id="tableContainer" class="table-responsive" style="display: none;">
                 {{ table_html|safe }}
             </div>
         {% endif %}
+
+        <h2>5分足チャート</h2>
+        <div>
+            {{ chart_html2 | safe }}
+        </div>
+    
+        <h2>月足チャート</h2>
+        <div>
+            {{ chart_html3 | safe }}
+        </div>
+
+        <h2>修正終値チャート</h2>
+        <div>
+            {{ linechart_html3 | safe }}
+        </div>
+
     </div>
 
     <!-- Bootstrap JS -->

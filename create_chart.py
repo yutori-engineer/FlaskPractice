@@ -151,3 +151,65 @@ def create_candlestick_with_volume(data, symbol, target_prices=None):
     )
     
     return fig.to_html(full_html=False, include_plotlyjs='cdn')
+
+def create_lineChart(data, symbol):
+    # サブプロットを作成
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
+                       vertical_spacing=0.03, 
+                       row_heights=[0.7, 0.3])
+    
+    #修正終値の線チャートを追加
+    fig.add_trace(
+        go.Scatter(
+        x=data['date'],
+        y=data['adjclose'],
+        name='修正終値',
+        line=dict(color='red', width=2),
+        visible=True
+    ),
+        row=1, col=1
+    )
+ 
+    # 出来高チャートを追加
+    fig.add_trace(
+        go.Bar(
+            x=data['date'],
+            y=data['volume'],
+            name='出来高',
+            marker_color='blue'
+        ),
+        row=2, col=1
+    )
+    
+    # レイアウトを設定
+    fig.update_layout(
+        title=f'{symbol} 株価チャート',
+        yaxis_title='株価',
+        xaxis_rangeslider_visible=False,
+        height=800,
+        showlegend=True
+    )
+    
+    # X軸の設定
+    fig.update_xaxes(
+        rangeslider_visible=False,
+        row=1, col=1,
+        tickformat="%Y-%m-%d",
+        tickangle=45
+    )
+    
+    # Y軸の設定
+    fig.update_yaxes(
+        title_text="株価", 
+        row=1, col=1,
+        title_standoff=0,
+        side="right"
+    )
+    fig.update_yaxes(
+        title_text="出来高", 
+        row=2, col=1,
+        title_standoff=0,
+        side="right"
+    )
+    
+    return fig.to_html(full_html=False, include_plotlyjs='cdn')

@@ -2,8 +2,8 @@ import os
 from flask import Flask, render_template, request
 import pandas as pd
 from get_yahooquery import get_stock_history, get_financial_data, get_all_financial_data
-from create_chart import create_candlestick_with_volume
-from translations import COLUMN_TRANSLATIONS
+from create_chart import create_candlestick_with_volume,create_lineChart
+from static.translations import COLUMN_TRANSLATIONS
 
 app = Flask(__name__)
 
@@ -14,10 +14,14 @@ def index():
     symbol = ''      # symbolを初期化
     financial_html = ''  # 財務データのHTMLを初期化
     financial_data_raw_html = ''  # 生の財務データのHTMLを初期化
+    show_raw_data = False  # デフォルトで非表示
     
     if request.method == 'POST':
         symbol = request.form['symbol']
+        show_raw_data = request.form.get('show_raw_data', 'false') == 'true'  # チェックボックスの状態を取得
         history_data = get_stock_history(symbol, period='1y', interval='1d')
+        history_data2 = get_stock_history(symbol, period='60d', interval='5m')
+        history_data3 = get_stock_history(symbol, period='max', interval='1mo')
         financial_data = get_financial_data(symbol)
         all_financial_data = get_all_financial_data(symbol)
         
@@ -31,7 +35,10 @@ def index():
                 'targetMedianPrice': financial_data['targetMedianPrice'].iloc[0] if 'targetMedianPrice' in financial_data.columns else None
             }
         
-        chart_html = create_candlestick_with_volume(history_data, symbol, target_prices)       
+        chart_html = create_candlestick_with_volume(history_data, symbol, target_prices) 
+        chart_html2 = create_candlestick_with_volume(history_data2, symbol, target_prices)  
+        chart_html3 = create_candlestick_with_volume(history_data3, symbol, target_prices)
+        linechart_html3 = create_lineChart(history_data3, symbol)         
         
         if history_data is not None and not history_data.empty:
             # データを日付でソートし、順序を逆にする
@@ -74,16 +81,24 @@ def index():
                                  plot=True, 
                                  table_html=table_html, 
                                  chart_html=chart_html, 
+                                 chart_html2=chart_html2, 
+                                 chart_html3=chart_html3,
+                                 linechart_html3=linechart_html3,
                                  financial_html=financial_html,
                                  financial_data_raw_html=financial_data_raw_html,
+                                 show_raw_data=show_raw_data,
                                  symbol=symbol)
     
     return render_template('index.html', 
                          plot=False, 
                          table_html=table_html, 
                          chart_html=chart_html, 
+                         chart_html2=chart_html2,
+                         chart_html3=chart_html3,
+                         linechart_html3=linechart_html3,
                          financial_html=financial_html,
                          financial_data_raw_html=financial_data_raw_html,
+                         show_raw_data=show_raw_data,
                          symbol=symbol)
 
 if __name__ == '__main__':

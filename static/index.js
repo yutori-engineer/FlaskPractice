@@ -26,6 +26,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
     }
+
+    // 財務データの表示/非表示
+    const toggleFinancialDataRawTableButton = document.getElementById('toggleFinancialDataRawTableButton');
+    const financialRawDataTableContainer = document.getElementById('financialRawDataTableContainer');
+    
+    if (toggleFinancialDataRawTableButton && financialRawDataTableContainer) {
+        toggleFinancialDataRawTableButton.addEventListener('click', function() {
+            if (financialRawDataTableContainer.style.display === 'none') {
+                financialRawDataTableContainer.style.display = 'block';
+                toggleFinancialDataRawTableButton.textContent = 'テーブルを非表示';
+            } else {
+                financialRawDataTableContainer.style.display = 'none';
+                toggleFinancialDataRawTableButton.textContent = 'テーブルを表示';
+            }
+        });
+    }
+    
     // テーブルの表示/非表示
     const toggleButton = document.getElementById('toggleTable');
     const tableContainer = document.getElementById('tableContainer');
