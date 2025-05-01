@@ -48,7 +48,8 @@ if __name__ == "__main__":
     # JPXのマージン取引関連ページのURL
     url = "https://www.jpx.co.jp/listing/others/margin/index.html"
     # SQLiteデータベースファイルのパス
-    db_path = "C:\\Users\\Owner\\Desktop\\FlaskPractice\\stock_data.db"
+    # db_path = "C:\\Users\\Owner\\Desktop\\FlaskPractice\\stock_data.db"
+    db_path = ".\stock_data.db"
 
     # ダウンロードしてDataFrameに変換
     df = download_excel(url)
