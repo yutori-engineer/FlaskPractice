@@ -11,18 +11,22 @@ def to_sqlite(df, db_path, table_name, symbol='',if_exists='replace'):
         print(f"データ書き込み中にエラーが発生しました: {e}")
         return pd.DataFrame()  # 空のDataFrameを返す
 
-def read_sqlite(symbol, db_path, table_name):
+def read_sqlite(db_path , table_name, symbol = None, query = None):
     #DataFrameをSQLiteデータベースから読み込む。
     try:
         with sqlite3.connect(db_path, timeout=10) as conn:
-            # クエリを実行してcodeに一致するレコードだけを抽出
-            query = f"""
-                SELECT *
-                FROM {table_name}
-                WHERE symbol = ?
-            """
-            df = pd.read_sql_query(query, conn, params=(f"{symbol}.T",))
-            return df
+            if query is None and symbol:
+                # クエリを実行してcodeに一致するレコードだけを抽出
+                query = f"""
+                    SELECT *
+                    FROM {table_name}
+                    WHERE symbol = ?
+                """
+                df = pd.read_sql_query(query, conn, params=(f"{symbol}.T",))
+                return df
+            else:
+                df = pd.read_sql_query(query, conn)
+                return df
             print(f"データをSQLiteデータベース '{db_path}' のテーブル '{table_name}' から読み込みました。")
     except Exception as e:
         print(f"データ読み込み中にエラーが発生しました: {e}")

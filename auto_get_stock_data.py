@@ -1,26 +1,26 @@
 from yahooquery import Ticker
-import pandas as pd
 import sqlite3
+import time
+from requests.exceptions import ChunkedEncodingError
+from urllib3.exceptions import ProtocolError
 import datetime
+
 #yahooqueryから株価データを取得する
-def get_financial_price(stock_code): 
-    try:
-        ticker = Ticker(stock_code + '.T')
-        # 辞書型データを展開して必要なデータのみを取得
-        financial_data = ticker.financial_data
-        print("financial_dataの構造:", financial_data)
-        df = pd.DataFrame(financial_data).T  # .Tで転置して行と列を入れ替える
-        df['Date'] = datetime.date.today()
-        print("作成されたDataFrame:")
-        print(df.head())
-        print("\n列名:", df.columns.tolist())
-        print("\nインデックス:", df.index.tolist())
-        # SQLiteに保存
-        with sqlite3.connect(db_path) as conn:
-            df.to_sql('financial_price', conn, if_exists='append', index=True)
-            print(f"銘柄コード {stock_code} のデータを保存しました")
-    except Exception as e:
-        print(f"エラーが発生しました: {e}")
+def get_stock_data(code):
+    max_retries = 3
+    retry_delay = 2  # 秒
+
+    for attempt in range(max_retries):
+        try:
+            ticker = Ticker(code + '.T')
+            df = ticker.history(period='max', interval='1mo')
+            return df
+        except (ChunkedEncodingError, ProtocolError) as e:
+            if attempt == max_retries - 1:  # 最後の試行の場合
+                raise  # エラーを再度発生させる
+            print(f"接続エラーが発生しました。{retry_delay}秒後に再試行します。(試行 {attempt + 1}/{max_retries})")
+            time.sleep(retry_delay)
+            continue
 
 def get_stock_codes_and_process(db_path):
     """
@@ -54,10 +54,7 @@ def get_stock_codes_and_process(db_path):
 if __name__ == '__main__':
             # SQLiteデータベースのパス
     db_path = ".\stock_data.db"
-    
-    # code = get_financial_price('1377')
-    # print(code)
-    # print('成功しました')
+
     start_time = datetime.datetime.now()
     print(start_time)
     # 銘柄コードを取得して関数を実行
@@ -68,5 +65,4 @@ if __name__ == '__main__':
     
     delta = end_time - start_time
     print(delta)
-    
 
