@@ -36,6 +36,7 @@ if __name__ == '__main__':
             # SQLiteデータベースのパス
     db_path = ".\stock_data.db"
 
+
     start_time = datetime.datetime.now()
     print(start_time)
     # 銘柄コードを取得して関数を実行

@@ -1,0 +1,368 @@
+2025-05-02 08:29:49 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table financial_data has no column named targetHighPrice
+
+2025-05-02 08:29:51 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table all_financial_data has no column named AccumulatedDepreciation
+
+2025-05-02 08:30:02 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table all_financial_data has no column named AmortizationCashFlow
+
+2025-05-02 08:30:08 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table financial_data has no column named freeCashflow
+
+2025-05-02 08:30:11 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table all_financial_data has no column named AccumulatedDepreciation
+
+2025-05-02 08:30:17 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table financial_data has no column named targetHighPrice
+
+2025-05-02 08:30:20 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table all_financial_data has no column named AccumulatedDepreciation
+
+2025-05-02 08:30:29 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table all_financial_data has no column named AccumulatedDepreciation
+
+2025-05-02 08:30:36 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table financial_data has no column named targetHighPrice
+
+2025-05-02 08:30:39 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table all_financial_data has no column named AccumulatedDepreciation
+
+2025-05-02 08:30:45 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table financial_data has no column named targetHighPrice
+
+2025-05-02 08:30:48 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table all_financial_data has no column named AmortizationCashFlow
+
+2025-05-02 08:30:56 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table financial_data has no column named targetHighPrice
+
+2025-05-02 08:30:58 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table all_financial_data has no column named AccumulatedDepreciation
+
+2025-05-02 08:31:04 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table financial_data has no column named freeCashflow
+
+2025-05-02 08:31:06 [ERROR] データ書き込み中にエラーが発生しました（symbol=''）:
+Traceback (most recent call last):
+  File "c:\Users\Owner\Desktop\FlaskPractice\sqlite_rw.py", line 30, in to_sqlite
+    df.to_sql(table_name, conn, if_exists=if_exists, index=True)
+  File "C:\python311\lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\core\generic.py", line 3008, in to_sql
+    return sql.to_sql(
+           ^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 788, in to_sql
+    return pandas_sql.to_sql(
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2439, in to_sql
+    return table.insert(chunksize, method)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 1059, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\python311\lib\site-packages\pandas\io\sql.py", line 2135, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+sqlite3.OperationalError: table all_financial_data has no column named AccumulatedDepreciation
+
