@@ -27,6 +27,10 @@ def get_stock_history(symbol, period='1y', interval='1d'):
             print(f"接続エラーが発生しました。{retry_delay}秒後に再試行します。(試行 {attempt + 1}/{max_retries})")
             time.sleep(retry_delay)
             continue
+        
+        except Exception as e:
+            print(f"データ取得時にエラーが発生しました: {e}{symbol}")
+            return pd.DataFrame() 
     
 def get_financial_data(symbol):
     max_retries = 3
@@ -60,6 +64,10 @@ def get_financial_data(symbol):
             print(f"接続エラーが発生しました。{retry_delay}秒後に再試行します。(試行 {attempt + 1}/{max_retries})")
             time.sleep(retry_delay)
             continue
+        
+        except Exception as e:
+            print(f"データ取得時にエラーが発生しました: {e}{symbol}")
+            return pd.DataFrame() 
 
 def get_all_financial_data(symbol):
     max_retries = 3
@@ -81,3 +89,6 @@ def get_all_financial_data(symbol):
             print(f"接続エラーが発生しました。{retry_delay}秒後に再試行します。(試行 {attempt + 1}/{max_retries})")
             time.sleep(retry_delay)
             continue
+        except Exception as e:
+            print(f"データ取得時にエラーが発生しました: {e}{symbol}")
+            return pd.DataFrame() 

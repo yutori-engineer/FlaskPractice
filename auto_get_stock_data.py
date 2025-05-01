@@ -11,25 +11,24 @@ def get_financials_for_all_codes(db_path):
             with conn:
                 code_table='taishakumeigara'
                 cursor = conn.execute(f'SELECT 銘柄コード FROM {code_table} WHERE "市場区分/商品区分" != "ETF"  AND "信用区分" = "貸借銘柄"')
-                codes = [row[0] for row in cursor.fetchall()]
+                symbols = [row[0] for row in cursor.fetchall()]
 
             # 各銘柄ごとにデータ取得
-            for code in codes:
-                symbol = f"{code}.T"
+            for symbol in symbols:
                 df = get_stock_history(symbol, period='1y', interval='1d')
-                to_sqlite(df, db_path, table_name = 'stock_history_1d', symbol='',if_exists='replace')
+                to_sqlite(df, db_path, table_name = 'stock_history_1d', symbol='',if_exists='append')
                 
                 df1 = get_stock_history(symbol, period='60d', interval='5m')
-                to_sqlite(df1, db_path, table_name = 'stock_history_5m', symbol='',if_exists='replace')
+                to_sqlite(df1, db_path, table_name = 'stock_history_5m', symbol='',if_exists='append')
                 
                 df2 = get_stock_history(symbol, period='max', interval='1mo')
-                to_sqlite(df2, db_path, table_name = 'stock_history_1mo', symbol='',if_exists='replace')
+                to_sqlite(df2, db_path, table_name = 'stock_history_1mo', symbol='',if_exists='append')
                 
                 df3 = get_financial_data(symbol)
-                to_sqlite(df3, db_path, table_name = 'financial_data', symbol='',if_exists='replace')
+                to_sqlite(df3, db_path, table_name = 'financial_data', symbol='',if_exists='append')
                 
                 df4 = get_all_financial_data(symbol)
-                to_sqlite(df4, db_path, table_name = 'all_financial_data', symbol='',if_exists='replace')
+                to_sqlite(df4, db_path, table_name = 'all_financial_data', symbol='',if_exists='append')
     except sqlite3.Error as e:
         print(f"SQLiteエラーが発生しました: {e}")
 
