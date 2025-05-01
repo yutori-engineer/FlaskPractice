@@ -1,0 +1,2 @@
+# stock_data.dbをGitの管理対象から除外
+stock_data.db
