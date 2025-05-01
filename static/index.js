@@ -35,10 +35,10 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleFinancialDataRawTableButton.addEventListener('click', function() {
             if (financialRawDataTableContainer.style.display === 'none') {
                 financialRawDataTableContainer.style.display = 'block';
-                toggleFinancialDataRawTableButton.textContent = 'テーブルを非表示';
+                toggleFinancialDataRawTableButton.textContent = '財務データを非表示';
             } else {
                 financialRawDataTableContainer.style.display = 'none';
-                toggleFinancialDataRawTableButton.textContent = 'テーブルを表示';
+                toggleFinancialDataRawTableButton.textContent = '財務データを表示';
             }
         });
     }
@@ -51,10 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleButton.addEventListener('click', function() {
             if (tableContainer.style.display === 'none') {
                 tableContainer.style.display = 'block';
-                toggleButton.textContent = 'テーブルを非表示';
+                toggleButton.textContent = '日足株価を非表示';
             } else {
                 tableContainer.style.display = 'none';
-                toggleButton.textContent = 'テーブルを表示';
+                toggleButton.textContent = '日足株価を表示';
             }
         });
     }

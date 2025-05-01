@@ -1,9 +1,7 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import pandas as pd
-import plotly.io as pio
 
-def create_candlestick_with_volume(data, symbol, target_prices=None):
+def create_candlestick(data, symbol, target_prices=None):
     # サブプロットを作成
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
                        vertical_spacing=0.03, 

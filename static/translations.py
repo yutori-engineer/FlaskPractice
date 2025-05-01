@@ -349,5 +349,13 @@ COLUMN_TRANSLATIONS = {
     'PensionAndEmployeeBenefitExpense': '年金及び従業員給付費用',
     'ReconciledCostOfRevenue': '調整後売上原価',
     'TaxesRefundPaid': '支払税金還付',
-    'UnrealizedGainLossOnInvestmentSecurities': '投資有価証券の未実現損益'
+    'UnrealizedGainLossOnInvestmentSecurities': '投資有価証券の未実現損益',
+    "maxAge": "有効期間",
+    "totalCashPerShare": "1株当たり現金同等物",
+    "ebitda": "EBITDA（利払い・税引き・償却前利益）",
+    "quickRatio": "当座比率",
+    "currentRatio": "流動比率",
+    "debtToEquity": "自己資本比率（D/Eレシオ）",
+    "revenuePerShare": "1株当たり売上高",
+    "financialCurrency": "財務諸表通貨"
 } 

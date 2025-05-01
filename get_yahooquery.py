@@ -1,17 +1,12 @@
 from yahooquery import Ticker
 import pandas as pd
+from datetime import date
 
 def get_stock_history(symbol, period='1y', interval='1d'):
     try:
         ticker = Ticker(symbol + '.T')
         df = ticker.history(period=period, interval=interval)
-        # インデックスをリセットしてdate列を作成(元データはsymbolとdateの複合インデックス)
-        df = df.reset_index()
-        
-        # date列の名前を確認して変更
-        if 'date' not in df.columns:
-            df = df.rename(columns={df.columns[0]: 'date'})
-            
+
         # --- 移動平均線の計算 ---
         df["MA5"] = df["close"].rolling(window=5).mean()
         df["MA20"] = df["close"].rolling(window=20).mean()
@@ -35,39 +30,28 @@ def get_financial_data(symbol):
             
         # 最初の銘柄のデータを取得
         first_symbol = keys[0]
-        data = financial_data[first_symbol]
-        
+        data = financial_data[first_symbol]   
         # DataFrameを作成
         df = pd.DataFrame([data])
-        
-        # 必要な列を選択
-        columns = [
-            'currentPrice', 'targetHighPrice', 'targetLowPrice', 'targetMeanPrice',
-            'targetMedianPrice', 'recommendationMean', 'recommendationKey',
-            'numberOfAnalystOpinions', 'totalCash', 'totalDebt', 'totalRevenue',
-            'revenueGrowth', 'grossProfits', 'freeCashflow', 'operatingCashflow',
-            'earningsGrowth', 'revenueGrowth', 'grossMargins', 'ebitdaMargins',
-            'operatingMargins', 'profitMargins', 'returnOnAssets', 'returnOnEquity'
-        ]
-        
-        # 存在する列のみを選択
-        available_columns = [col for col in columns if col in df.columns]
-        df = df[available_columns]
+        df["symbol"] = first_symbol
+        df["date"] = date.today().strftime('%Y-%m-%d')
+        # symbolとdateをインデックスに設定（MultiIndex）
+        df = df.set_index(['symbol', 'date'])     
         
         return df
     
     except Exception as e:
         print(f"エラーが発生しました: {e}")
         return None
-    
-        return df
 
 def get_all_financial_data(symbol):
     try:
         ticker = Ticker(symbol + '.T')
-        all_financial_data = ticker.all_financial_data()
+        df = ticker.all_financial_data()
+        df = df.reset_index()
+        df = df.set_index(['symbol', 'asOfDate'])  
     
-        return all_financial_data
+        return df
     
     except Exception as e:
         print(f"エラーが発生しました: {e}")
