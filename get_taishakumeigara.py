@@ -3,7 +3,7 @@ import pandas as pd
 from io import BytesIO
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from sqlite_rw import save_to_sqlite
+from sqlite_rw import to_sqlite
 
 def download_excel(url):
     # ページのHTMLを取得
@@ -54,6 +54,6 @@ if __name__ == "__main__":
     df = download_excel(url)
 
     # SQLiteに書き込む
-    save_to_sqlite(df, db_path, "taishakumeigara")
+    to_sqlite(df, db_path, "taishakumeigara")
 
 
