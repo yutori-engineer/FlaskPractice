@@ -1,53 +1,35 @@
-from yahooquery import Ticker
 import sqlite3
-import time
-from requests.exceptions import ChunkedEncodingError
-from urllib3.exceptions import ProtocolError
 import datetime
+from sqlite_rw import to_sqlite, read_sqlite
+from get_yahooquery import get_stock_history, get_all_financial_data, get_financial_data
 
-#yahooqueryから株価データを取得する
-def get_stock_data(code):
-    max_retries = 3
-    retry_delay = 2  # 秒
+def get_financials_for_all_codes(db_path):
 
-    for attempt in range(max_retries):
-        try:
-            ticker = Ticker(code + '.T')
-            df = ticker.history(period='max', interval='1mo')
-            return df
-        except (ChunkedEncodingError, ProtocolError) as e:
-            if attempt == max_retries - 1:  # 最後の試行の場合
-                raise  # エラーを再度発生させる
-            print(f"接続エラーが発生しました。{retry_delay}秒後に再試行します。(試行 {attempt + 1}/{max_retries})")
-            time.sleep(retry_delay)
-            continue
-
-def get_stock_codes_and_process(db_path):
-    """
-    SQLiteのテーブル 'taishakumeigara' から銘柄コードを取得し、
-    各銘柄コードに対して関数 'process_stock_code' を繰り返し実行する。
-
-    Parameters:
-        db_path (str): SQLiteデータベースのパス。
-    """
     try:
-        # データベースに接続
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
+        with sqlite3.connect(db_path) as conn:
+            # 銘柄コードをすべて取得
+            with conn:
+                code_table='taishakumeigara'
+                cursor = conn.execute(f'SELECT 銘柄コード FROM {code_table} WHERE "市場区分/商品区分" != "ETF"  AND "信用区分" = "貸借銘柄"')
+                codes = [row[0] for row in cursor.fetchall()]
 
-        # 銘柄コードを取得するSQLクエリ
-        query = 'SELECT "銘柄コード" FROM taishakumeigara WHERE "市場区分/商品区分" != "ETF"  AND "信用区分" = "貸借銘柄"'
-        cursor.execute(query)
-
-        # 結果を1つずつ取得して関数に渡す
-        for row in cursor.fetchall():
-            stock_code = row[0]
-            get_financial_price(stock_code)
-
-        # 接続を閉じる
-        conn.close()
-        print("すべての銘柄コードを処理しました。")
-
+            # 各銘柄ごとにデータ取得
+            for code in codes:
+                symbol = f"{code}.T"
+                df = get_stock_history(symbol, period='1y', interval='1d')
+                to_sqlite(df, db_path, table_name = 'stock_history_1d', symbol='',if_exists='replace')
+                
+                df1 = get_stock_history(symbol, period='60d', interval='5m')
+                to_sqlite(df1, db_path, table_name = 'stock_history_5m', symbol='',if_exists='replace')
+                
+                df2 = get_stock_history(symbol, period='max', interval='1mo')
+                to_sqlite(df2, db_path, table_name = 'stock_history_1mo', symbol='',if_exists='replace')
+                
+                df3 = get_financial_data(symbol)
+                to_sqlite(df3, db_path, table_name = 'financial_data', symbol='',if_exists='replace')
+                
+                df4 = get_all_financial_data(symbol)
+                to_sqlite(df4, db_path, table_name = 'all_financial_data', symbol='',if_exists='replace')
     except sqlite3.Error as e:
         print(f"SQLiteエラーが発生しました: {e}")
 
@@ -58,7 +40,7 @@ if __name__ == '__main__':
     start_time = datetime.datetime.now()
     print(start_time)
     # 銘柄コードを取得して関数を実行
-    get_stock_codes_and_process(db_path)
+    get_financials_for_all_codes(db_path)
     
     end_time = datetime.datetime.now()
     print(end_time)
