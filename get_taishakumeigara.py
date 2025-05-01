@@ -1,20 +1,40 @@
 import requests
 import pandas as pd
-import sqlite3
 from io import BytesIO
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+from sqlite_rw import save_to_sqlite
 
 def download_excel(url):
-    """
-    インターネット上のExcelファイルをダウンロードしてDataFrameに変換する。
-
-    Parameters:
-        url (str): ExcelファイルのURL。
-
-    Returns:
-        pd.DataFrame: Excelファイルのデータ。
-    """
+    # ページのHTMLを取得
     response = requests.get(url)
-    response.raise_for_status()  # ダウンロードに失敗した場合はエラーをスロー
+    # ステータスコードが200でない場合、例外を発生させる
+    response.raise_for_status()
+    # HTMLをパース
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    # エクセルファイルへのリンクを抽出
+    excel_links = []
+    for a_tag in soup.find_all("a", href=True):
+        href = a_tag["href"]
+        if href.lower().endswith((".xls", ".xlsx")):
+            full_url = urljoin(url, href)
+            excel_links.append(full_url)
+
+    # 結果を表示
+    link = ''
+    if excel_links:
+        print("エクセルファイルのリンク:")
+        for link in excel_links:
+            print(link)
+    else:
+        print("エクセルファイルのリンクが見つかりませんでした。")
+    
+    #エクセルファイルのリンク先を抽出    
+    response = requests.get(link)
+    # ダウンロードに失敗した場合はエラーをスロー
+    response.raise_for_status()  
+
     excel_data = BytesIO(response.content)
     df = pd.read_excel(excel_data)
 
@@ -24,24 +44,9 @@ def download_excel(url):
     
     return df
 
-def save_to_sqlite(df, db_path, table_name):
-    """
-    DataFrameをSQLiteデータベースに保存する。
-
-    Parameters:
-        df (pd.DataFrame): 保存するデータ。
-        db_path (str): SQLiteデータベースのパス。
-        table_name (str): テーブル名。
-    """
-    conn = sqlite3.connect(db_path)
-    df.to_sql(table_name, conn, if_exists='replace', index=False)
-    conn.close()
-    print(f"データがSQLiteデータベース '{db_path}' のテーブル '{table_name}' に保存されました。")
-
 if __name__ == "__main__":
-    # インターネット上のExcelファイルのURL
-    url = "https://www.jpx.co.jp/listing/others/margin/tvdivq0000000od2-att/20241202_list.xlsx"
-
+    # JPXのマージン取引関連ページのURL
+    url = "https://www.jpx.co.jp/listing/others/margin/index.html"
     # SQLiteデータベースファイルのパス
     db_path = "C:\\Users\\Owner\\Desktop\\FlaskPractice\\stock_data.db"
 
@@ -50,3 +55,5 @@ if __name__ == "__main__":
 
     # SQLiteに書き込む
     save_to_sqlite(df, db_path, "taishakumeigara")
+
+
