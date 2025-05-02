@@ -3,7 +3,7 @@ import pandas as pd
 from backtesting import Backtest
 import stock_list as sl
 import get_stock as gs
-import strategies as st
+import backtesting.strategies as st
 
 # 結果配列の準備
 result = []
