@@ -2,6 +2,10 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 def create_candlestick(data, symbol, target_prices=None):
+    print(data.columns)
+    print(data.head())
+    print(data.dtypes)  # これで date の型を確認
+    
     # サブプロットを作成
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
                        vertical_spacing=0.03, 
@@ -113,6 +117,7 @@ def create_candlestick(data, symbol, target_prices=None):
             y=data['volume'],
             name='出来高',
             marker_color='blue'
+            ,marker_line=dict(width=1, color='black')  # 線の太さと色
         ),
         row=2, col=1
     )
@@ -175,6 +180,7 @@ def create_lineChart(data, symbol):
             y=data['volume'],
             name='出来高',
             marker_color='blue'
+            ,marker_line=dict(width=1, color='black')  # 線の太さと色
         ),
         row=2, col=1
     )

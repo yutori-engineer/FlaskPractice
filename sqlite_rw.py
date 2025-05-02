@@ -3,6 +3,7 @@ import pandas as pd
 import re
 import logging
 import traceback
+import datetime
 
 # --- ログ設定（ファイル + コンソール） ---
 logger = logging.getLogger(__name__)
@@ -73,6 +74,7 @@ def to_sqlite(df, db_path, table_name, symbol='', if_exists='append'):
     add_missing_columns(df, db_path, table_name)
     try:
         with sqlite3.connect(db_path, timeout=10) as conn:
+            df=df.reset_index()
             df.to_sql(table_name, conn, if_exists=if_exists, index=False)
             print(f"データ'{symbol}'がSQLiteデータベース '{db_path}' のテーブル '{table_name}' に保存されました。")
     except sqlite3.OperationalError as e:
@@ -92,6 +94,7 @@ def to_sqlite(df, db_path, table_name, symbol='', if_exists='append'):
             # 再実行
             try:
                 with sqlite3.connect(db_path, timeout=10) as conn:
+                    df=df.reset_index()
                     df.to_sql(table_name, conn, if_exists=if_exists, index=False)
                     print(f"再試行成功: データ'{symbol}'がSQLiteデータベース '{db_path}' に保存されました。")
             except Exception:
@@ -118,3 +121,23 @@ def read_sqlite(db_path, table_name, symbol=None, query=None):
     except Exception:
         logger.error("データ読み込み中にエラーが発生しました:\n%s", traceback.format_exc())
         return pd.DataFrame()
+
+if __name__ == '__main__':
+            # SQLiteデータベースのパス
+    db_path = ".\stock_data.db"
+    symbol = '1301'
+    table_name = 'stock_history_1d'
+
+    # start_time = datetime.datetime.now()
+    # print(start_time)
+    # 銘柄コードを取得して関数を実行
+    df = read_sqlite(db_path, table_name, symbol).reset_index()
+    df.set_index(['symbol', 'date'])
+    print(df)
+    
+    # end_time = datetime.datetime.now()
+    # print(end_time)
+    
+    # delta = end_time - start_time
+    # print(delta)
+
