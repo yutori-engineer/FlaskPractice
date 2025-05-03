@@ -1,30 +1,12 @@
 import sqlite3
 import pandas as pd
 import re
-import logging
 import traceback
 import datetime
+from logger_config import setup_logger
 
-# --- ログ設定（ファイル + コンソール） ---
-logger = logging.getLogger(__name__)
-LOG_LEVEL = logging.INFO  # または logging.DEBUG にすると詳細ログも出る
-logger.setLevel(LOG_LEVEL)
-
-# ファイルハンドラ（ログファイルに出力）
-file_handler = logging.FileHandler('./error.txt', encoding='utf-8')
-file_handler.setLevel(LOG_LEVEL)
-file_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', '%Y-%m-%d %H:%M:%S')
-file_handler.setFormatter(file_formatter)
-
-# コンソールハンドラ（標準出力に出力）
-console_handler = logging.StreamHandler()
-console_handler.setLevel(LOG_LEVEL)
-console_handler.setFormatter(file_formatter)
-
-# 既存のハンドラが重複して追加されないようにする
-if not logger.handlers:
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+#ログ設定
+logger = setup_logger(__name__)
 
 # --- カラム追加関数 ---
 def add_column_if_not_exists(db_path, table_name, column_name, column_type):

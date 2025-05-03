@@ -1,5 +1,4 @@
 import logging
-import sqlite3
 import pandas as pd
 import time
 from datetime import date
@@ -7,23 +6,10 @@ from yahooquery import Ticker
 from requests.exceptions import ChunkedEncodingError
 from urllib3.exceptions import ProtocolError
 import traceback
+from logger_config import setup_logger
 
-# --- ログ設定（ファイル + コンソール） ---
-logger = logging.getLogger('stock_logger')
-logger.setLevel(logging.ERROR)
-
-# ファイル出力
-file_handler = logging.FileHandler('./error.txt', encoding='utf-8')
-file_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', '%Y-%m-%d %H:%M:%S'))
-
-# コンソール出力
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', '%Y-%m-%d %H:%M:%S'))
-
-# 重複追加を防止
-if not logger.handlers:
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+# --- ログ設定---
+logger = setup_logger('stock_logger', level=logging.ERROR) 
 
 def get_stock_history(symbol, period='1y', interval='1d'):
     max_retries = 3
