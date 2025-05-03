@@ -37,7 +37,7 @@ def get_stock_data_for_selected_codes(db_path):
             # 選定された銘柄コードを取得
             code_table = 'financial_data'
             cursor = conn.execute(f'''
-                SELECT *
+                SELECT substr(symbol, 1, 4)
                 FROM financial_data AS fd
                 WHERE date = (
                     SELECT MAX(date)
