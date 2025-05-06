@@ -13,7 +13,7 @@ logger = setup_logger('stock_logger', level=logging.ERROR)
 
 
 # --- 共通関数: リトライ付きデータ取得 ---
-def fetch_with_retry(func, symbol, max_retries=3, retry_delay=2, label="データ"):
+def fetch_with_retry(func, symbol, max_retries=5, retry_delay=5, label="データ"):
     for attempt in range(max_retries):
         try:
             return func(symbol)
@@ -25,7 +25,8 @@ def fetch_with_retry(func, symbol, max_retries=3, retry_delay=2, label="デー�
             time.sleep(retry_delay)
         except Exception:
             logger.error(f"{symbol} の{label}取得中にエラー:\n%s", traceback.format_exc())
-            return pd.DataFrame()
+            return pd.DataFrame()  # エラー時には空のDataFrameを返す
+
 
 
 # --- 共通関数: Ticker オブジェクト作成 ---
@@ -85,3 +86,10 @@ def get_all_financial_data(symbol):
         return df
 
     return fetch_with_retry(task, symbol, label="財務データ")
+
+# --- 実行例 ---
+if __name__ == '__main__':
+    symbol = '6758'
+    print(get_financial_data(symbol))
+    print(get_all_financial_data(symbol))
+    print(get_stock_history(symbol))

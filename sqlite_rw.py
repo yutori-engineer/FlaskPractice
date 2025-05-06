@@ -113,7 +113,7 @@ def read_sqlite(db_path, table_name, symbol=None, query=None):
 # --- 実行例 ---
 if __name__ == '__main__':
     db_path = "./stock_data.db"
-    symbol = '1301'
+    symbol = '6758'
     table_name = 'stock_history_1d'
 
     start_time = datetime.now()
