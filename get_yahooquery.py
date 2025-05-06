@@ -9,7 +9,7 @@ import traceback
 from logger_config import setup_logger
 
 # --- ログ設定 ---
-logger = setup_logger('stock_logger', level=logging.ERROR)
+logger = setup_logger('stock_logger', level=logging.INFO)
 
 
 # --- 共通関数: リトライ付きデータ取得 ---
@@ -17,16 +17,14 @@ def fetch_with_retry(func, symbol, max_retries=5, retry_delay=5, label="デー�
     for attempt in range(max_retries):
         try:
             return func(symbol)
-        except (ChunkedEncodingError, ProtocolError):
-            if attempt == max_retries - 1:
-                logger.error(f"{symbol} の{label}取得で接続エラー（最終試行失敗）:\n%s", traceback.format_exc())
-                raise
-            print(f"{label}の接続エラー。{retry_delay}秒後に再試行します。(試行 {attempt + 1}/{max_retries})")
-            time.sleep(retry_delay)
-        except Exception:
-            logger.error(f"{symbol} の{label}取得中にエラー:\n%s", traceback.format_exc())
-            return pd.DataFrame()  # エラー時には空のDataFrameを返す
-
+        except (ChunkedEncodingError, ProtocolError) as e:
+            logger.warning(f"{symbol} の{label}取得で接続エラー: {str(e)} (試行 {attempt + 1}/{max_retries})")
+        except Exception as e:
+            logger.error(f"{symbol} の{label}取得中にエラー:\n{traceback.format_exc()}")
+            return pd.DataFrame()  # 汎用エラーでは空DataFrameを返す
+        time.sleep(retry_delay * (2 ** attempt))  # 指数バックオフ
+    logger.error(f"{symbol} の{label}取得に失敗しました（全{max_retries}回の試行後）")
+    return pd.DataFrame()
 
 
 # --- 共通関数: Ticker オブジェクト作成 ---
@@ -36,17 +34,22 @@ def get_ticker(symbol):
     else:
         return Ticker(symbol)         # ティッカー（アルファベット）の場合はそのまま
 
+
 # --- 株価履歴データ取得 ---
 def get_stock_history(symbol, period='1y', interval='1d'):
     def task(sym):
         ticker = get_ticker(sym)
         df = ticker.history(period=period, interval=interval)
 
+        if df.empty or 'close' not in df.columns:
+            logger.warning(f"{sym} の株価データが取得できませんでした。")
+            return pd.DataFrame()
+
         df["MA5"] = df["close"].rolling(window=5).mean()
         df["MA20"] = df["close"].rolling(window=20).mean()
         df["MA60"] = df["close"].rolling(window=60).mean()
 
-        print(f"{sym}の株価時系列{interval}取得しました。")
+        logger.info(f"{sym} の株価時系列（{interval}）を取得しました。")
         return df
 
     return fetch_with_retry(task, symbol, label="株価時系列")
@@ -60,7 +63,8 @@ def get_financial_data(symbol):
 
         keys = list(financial_data.keys())
         if not keys:
-            return None
+            logger.warning(f"{sym} のKPIデータが存在しません。")
+            return pd.DataFrame()
 
         first_symbol = keys[0]
         data = financial_data[first_symbol]
@@ -69,7 +73,7 @@ def get_financial_data(symbol):
         df["date"] = date.today().strftime('%Y-%m-%d')
         df = df.set_index(['symbol', 'date'])
 
-        print(f"{sym}の株価KPIデータ取得しました。")
+        logger.info(f"{sym} の株価KPIデータを取得しました。")
         return df
 
     return fetch_with_retry(task, symbol, label="KPIデータ")
@@ -79,13 +83,23 @@ def get_financial_data(symbol):
 def get_all_financial_data(symbol):
     def task(sym):
         ticker = get_ticker(sym)
-        df = ticker.all_financial_data()
-        df = df.reset_index().set_index(['symbol', 'asOfDate'])
 
-        print(f"{sym}の財務データ取得しました。")
+        try:
+            df = ticker.all_financial_data()
+        except AttributeError:
+            logger.error(f"{sym} の all_financial_data() はサポートされていないか利用不可です。")
+            return pd.DataFrame()
+
+        if df.empty:
+            logger.warning(f"{sym} の財務データが取得できませんでした。")
+            return pd.DataFrame()
+
+        df = df.reset_index().set_index(['symbol', 'asOfDate'])
+        logger.info(f"{sym} の財務データを取得しました。")
         return df
 
     return fetch_with_retry(task, symbol, label="財務データ")
+
 
 # --- 実行例 ---
 if __name__ == '__main__':
