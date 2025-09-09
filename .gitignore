@@ -1,6 +1,7 @@
+__pycache__/
+gemini-cli
 stock_data.db
 
 auto_get_stock_data.ps1
 
 error.txt
-gemini-cli
