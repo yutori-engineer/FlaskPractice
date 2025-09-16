@@ -31,9 +31,6 @@
     <div class="chart">{{ chart_html3|safe }}</div>
     <div class="chart">{{ linechart_html3|safe }}</div>
 
-    <h2 class="h5 mt-4">価格データ</h2>
-    <div class="table-responsive">{{ table_html|safe }}</div>
-
     <h2 class="h5 mt-4">財務データ（整形）</h2>
     <div class="table-responsive">{{ financial_html|safe }}</div>
 
@@ -41,6 +38,10 @@
       <h2 class="h5 mt-4">財務データ（生）</h2>
       <div class="table-responsive">{{ financial_data_raw_html|safe }}</div>
     {% endif %}
+    
+    <h2 class="h5 mt-4">価格データ</h2>
+    <div class="table-responsive">{{ table_html|safe }}</div>
+
   {% else %}
     <p>上のフォームにティッカー（例: AAPL, MSFT, TSLA）を入力して送信してください。</p>
   {% endif %}
