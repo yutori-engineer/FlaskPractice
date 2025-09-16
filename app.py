@@ -30,45 +30,45 @@ def index():
         all_financial_data = pd.DataFrame()
         db_path = ".\stock_data.db"
         
-        try:
-            table_name = 'stock_history_1d'
-            history_data = read_sqlite(db_path, table_name, symbol)
-            if history_data.empty:
-                raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
-        except Exception:
-            history_data = get_stock_history(symbol, period='1y', interval='1d').reset_index()
+        # try:
+        #     table_name = 'stock_history_1d'
+        #     history_data = read_sqlite(db_path, table_name, symbol)
+        #     if history_data.empty:
+        #         raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
+        # except Exception:
+        history_data = get_stock_history(symbol, period='1y', interval='1d').reset_index()
             
-        try:
-            table_name = 'stock_history_5m'
-            history_data2 = read_sqlite(db_path, table_name, symbol).reset_index()
-            if history_data2.empty:
-                raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
-        except Exception:           
-            history_data2 = get_stock_history(symbol, period='60d', interval='5m').reset_index()
+        # try:
+        #     table_name = 'stock_history_5m'
+        #     history_data2 = read_sqlite(db_path, table_name, symbol).reset_index()
+        #     if history_data2.empty:
+        #         raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
+        # except Exception:           
+        history_data2 = get_stock_history(symbol, period='60d', interval='5m').reset_index()
 
-        try:
-            table_name = 'stock_history_1mo'
-            history_data3 = read_sqlite(db_path, table_name, symbol).reset_index()
-            if history_data3.empty:
-                raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
-        except Exception:         
-            history_data3 = get_stock_history(symbol, period='max', interval='1mo').reset_index()
+        # try:
+        #     table_name = 'stock_history_1mo'
+        #     history_data3 = read_sqlite(db_path, table_name, symbol).reset_index()
+        #     if history_data3.empty:
+        #         raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
+        # except Exception:         
+        history_data3 = get_stock_history(symbol, period='max', interval='1mo').reset_index()
             
-        try:
-            table_name = 'financial_data'
-            financial_data = read_sqlite(db_path, table_name, symbol).reset_index()
-            if financial_data.empty:
-                raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
-        except Exception:               
-            financial_data = get_financial_data(symbol).reset_index()
+        # try:
+        #     table_name = 'financial_data'
+        #     financial_data = read_sqlite(db_path, table_name, symbol).reset_index()
+        #     if financial_data.empty:
+        #         raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
+        # except Exception:               
+        financial_data = get_financial_data(symbol).reset_index()
             
-        try:
-            table_name = 'all_financial_data'
-            all_financial_data = read_sqlite(db_path, table_name, symbol).reset_index()
-            if all_financial_data.empty:
-                raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
-        except Exception:                 
-            all_financial_data = get_all_financial_data(symbol).reset_index()
+        # try:
+        #     table_name = 'all_financial_data'
+        #     all_financial_data = read_sqlite(db_path, table_name, symbol).reset_index()
+        #     if all_financial_data.empty:
+        #         raise ValueError("Empty DataFrame")  # 強制的にexceptに飛ばす
+        # except Exception:                 
+        all_financial_data = get_all_financial_data(symbol).reset_index()
         
         # 目標株価のデータを準備
         target_prices = {}
