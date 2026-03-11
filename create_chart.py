@@ -58,24 +58,37 @@ def create_candlestick(data, symbol, target_prices=None):
         row=1, col=1
     )
     
-    # 目標価格の水平線を追加
+    # 目標価格 & 期待レンジの水平線を追加
     if target_prices:
         colors = {
             'targetHighPrice': 'black',
             'targetLowPrice': 'black',
             'targetMeanPrice': 'red',
-            'targetMedianPrice': 'black'
+            'targetMedianPrice': 'black',
+            # 1ヶ月先レンジ（3つの方法）用
+            'm1_lower': 'green',
+            'm1_upper': 'green',
+            'm2_lower': 'orange',
+            'm2_upper': 'orange',
+            'm3_lower': 'purple',
+            'm3_upper': 'purple',
         }
         
         labels = {
             'targetHighPrice': '目標高値',
             'targetLowPrice': '目標安値',
             'targetMeanPrice': '目標平均価格',
-            'targetMedianPrice': '目標中央価格'
+            'targetMedianPrice': '目標中央価格',
+            'm1_lower': '方法1 下限',
+            'm1_upper': '方法1 上限',
+            'm2_lower': '方法2 下限',
+            'm2_upper': '方法2 上限',
+            'm3_lower': '方法3 下限',
+            'm3_upper': '方法3 上限',
         }
         
         for key, price in target_prices.items():
-            if price is not None:
+            if price is not None and key in colors and key in labels:
                 # 水平線を追加
                 fig.add_shape(
                     type="line",

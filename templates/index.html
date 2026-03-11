@@ -24,8 +24,36 @@
     </div>
   </form>
 
+  {# エラーメッセージ表示 #}
+  {% if errors %}
+    <div class="alert alert-warning" role="alert">
+      <ul class="mb-0">
+        {% for e in errors %}
+          <li>{{ e }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
   {% if plot %}
     <h2 class="h5">チャート</h2>
+    {% if expected_ranges %}
+      <div class="mb-3">
+        <h3 class="h6">1か月先の想定レンジ（30%〜70%付近）</h3>
+        <ul class="mb-1">
+          {% for key, r in expected_ranges.items() %}
+            <li>
+              {{ r.name }}:
+              現在値 = {{ "%.2f"|format(r.S0) }},
+              下限 = {{ "%.2f"|format(r.lower) }},
+              上限 = {{ "%.2f"|format(r.upper) }}
+            </li>
+          {% endfor %}
+        </ul>
+        <small class="text-muted">※ 5分足チャート上にも各方法の上下限を水平線として表示しています。</small>
+      </div>
+    {% endif %}
+
     <div class="chart">{{ chart_html|safe }}</div>
     <div class="chart">{{ chart_html2|safe }}</div>
     <div class="chart">{{ chart_html3|safe }}</div>
