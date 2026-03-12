@@ -168,7 +168,7 @@ def fetch_data_from_api(symbol: str):
             safe_call,
             "history_5m",
             # 負荷軽減のため60d→20dに短縮（必要に応じて調整）
-            lambda: get_stock_history(symbol, period="20d", interval="5m").reset_index(),
+            lambda: get_stock_history(symbol, period="60d", interval="5m").reset_index(),
         )
         ex.submit(
             safe_call,

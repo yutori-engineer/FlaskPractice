@@ -53,10 +53,13 @@
         <small class="text-muted">※ 5分足チャート上にも各方法の上下限を水平線として表示しています。</small>
       </div>
     {% endif %}
-
-    <div class="chart">{{ chart_html|safe }}</div>
+    <h3>５分足</h3>
     <div class="chart">{{ chart_html2|safe }}</div>
+    <h3>日足</h3>
+    <div class="chart">{{ chart_html|safe }}</div>
+    <h3>月足</h3>
     <div class="chart">{{ chart_html3|safe }}</div>
+    <h3>月チャート</h3>
     <div class="chart">{{ linechart_html3|safe }}</div>
 
     <h2 class="h5 mt-4">財務データ（整形）</h2>
