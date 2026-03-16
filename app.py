@@ -1,22 +1,13 @@
-from backtest_engine import run_all
-from sqlite_rw import read_sqlite
-from static.translations import COLUMN_TRANSLATIONS
-from create_chart import create_candlestick, create_lineChart
-from get_yahooquery import get_stock_history, get_financial_data, get_all_financial_data
-import plotly.utils
-import plotly.graph_objects as go
-import numpy as np
-import pandas as pd
-from flask import Flask, render_template, request
-from concurrent.futures import ThreadPoolExecutor
-import time
-import json
 import os
-import sys
-
-# kabuSystem ルートディレクトリ（kabu_utils, settings など）をパスに追加
-sys.path.insert(0, os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), ".."))
+import time
+from concurrent.futures import ThreadPoolExecutor
+from flask import Flask, render_template, request
+import pandas as pd
+import numpy as np
+from get_yahooquery import get_stock_history, get_financial_data, get_all_financial_data
+from create_chart import create_candlestick, create_lineChart
+from static.translations import COLUMN_TRANSLATIONS
+from sqlite_rw import read_sqlite
 
 app = Flask(__name__)
 
@@ -204,7 +195,13 @@ def fetch_data_from_api(symbol: str):
     safe_call("history_1d", lambda: get_stock_history_1d_from_db(symbol))
 
     # Web API呼び出しを並列化して待ち時間を短縮しつつ、各APIはリトライする
-    with ThreadPoolExecutor(max_workers=4) as ex:
+    with ThreadPoolExecutor(max_workers=5) as ex:
+        ex.submit(
+            safe_call,
+            "history_1d",
+            lambda: get_stock_history(
+                symbol, period="1y", interval="1d").reset_index(),
+        )
         ex.submit(
             safe_call,
             "history_5m",
@@ -464,99 +461,6 @@ def index():
         symbol=symbol,
         errors=errors,
         expected_ranges=expected_ranges,
-    )
-
-
-# ──────────────────────────────────────────
-# バックテスト戦略探索ページ
-# ──────────────────────────────────────────
-@app.route("/backtest", methods=["GET", "POST"])
-def backtest():
-    symbol = ""
-    errors = []
-    result_json = None          # Plotly用JSON
-    table_html = ""
-    trade_count_total = 0
-
-    if request.method == "POST":
-        symbol = (request.form.get("symbol") or "").strip()
-        if not symbol:
-            errors.append("銘柄コードを入力してください。")
-        else:
-            try:
-                # 日足1年分を PostgreSQL から取得
-                raw = get_stock_history_1d_from_db(symbol)
-                if raw is None or raw.empty:
-                    errors.append(
-                        f"'{symbol}' のデータが取得できませんでした。DBに銘柄データが存在するか確認してください。")
-                else:
-                    result_df = run_all(raw)
-
-                    trade_count_total = int(result_df["trade_count"].sum())
-
-                    # ── テーブル用HTML生成 ──
-                    display_df = result_df[[
-                        "signal_name", "hold_days", "trade_count",
-                        "win_rate", "expected_value", "profit_factor",
-                        "avg_win", "avg_loss", "max_dd", "sharpe"
-                    ]].copy()
-                    display_df.columns = [
-                        "戦略名", "保有日数", "取引数",
-                        "勝率(%)", "期待値(%)", "PF",
-                        "平均利益(%)", "平均損失(%)", "最大DD(%)", "シャープ比"
-                    ]
-                    # 1行ずつ期待値でclassを付けるためにrecordsへ
-                    records = []
-                    for _, row in display_df.iterrows():
-                        ev = row["期待値(%)"]
-                        positive = isinstance(ev, float) and ev > 0
-                        records.append(
-                            {"positive": positive, "data": row.tolist()})
-                    table_html = records  # テンプレートへ渡す
-
-                    # ── Plotly 棒グラフ ──
-                    pivot = result_df.pivot_table(
-                        index="signal_name", columns="hold_days",
-                        values="expected_value", aggfunc="first"
-                    )
-                    fig = go.Figure()
-                    colors = ["#4C9BE8", "#5BC48A",
-                              "#F5A623", "#E05C5C", "#9B59B6"]
-                    for idx, col in enumerate(pivot.columns):
-                        fig.add_trace(go.Bar(
-                            name=f"{col}日保有",
-                            x=pivot.index.tolist(),
-                            y=pivot[col].tolist(),
-                            marker_color=colors[idx % len(colors)],
-                        ))
-                    fig.update_layout(
-                        barmode="group",
-                        title=f"{symbol} — シグナル別期待値（%）",
-                        xaxis_title="戦略",
-                        yaxis_title="期待値（%）",
-                        legend_title="保有日数",
-                        template="plotly_dark",
-                        height=500,
-                        margin=dict(l=20, r=20, t=50, b=120),
-                        xaxis=dict(tickangle=-30),
-                        shapes=[dict(
-                            type="line", x0=-0.5, x1=len(pivot.index) - 0.5,
-                            y0=0, y1=0, line=dict(color="white", width=1, dash="dot")
-                        )],
-                    )
-                    result_json = json.dumps(
-                        fig, cls=plotly.utils.PlotlyJSONEncoder)
-
-            except Exception as e:
-                errors.append(f"バックテスト実行中にエラーが発生しました: {e}")
-
-    return render_template(
-        "backtest.html",
-        symbol=symbol,
-        errors=errors,
-        result_json=result_json,
-        table_html=table_html,
-        trade_count_total=trade_count_total,
     )
 
 
