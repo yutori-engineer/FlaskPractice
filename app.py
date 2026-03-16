@@ -1,15 +1,58 @@
-import os
-import time
-from concurrent.futures import ThreadPoolExecutor
-from flask import Flask, render_template, request
-import pandas as pd
-import numpy as np
-from get_yahooquery import get_stock_history, get_financial_data, get_all_financial_data
-from create_chart import create_candlestick, create_lineChart
-from static.translations import COLUMN_TRANSLATIONS
+from backtest_engine import run_all
 from sqlite_rw import read_sqlite
+from static.translations import COLUMN_TRANSLATIONS
+from create_chart import create_candlestick, create_lineChart
+from get_yahooquery import get_stock_history, get_financial_data, get_all_financial_data
+import plotly.utils
+import plotly.graph_objects as go
+import numpy as np
+import pandas as pd
+from flask import Flask, render_template, request
+from concurrent.futures import ThreadPoolExecutor
+import time
+import json
+import os
+import sys
+
+# kabuSystem ルートディレクトリ（kabu_utils, settings など）をパスに追加
+sys.path.insert(0, os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), ".."))
 
 app = Flask(__name__)
+
+
+def get_stock_history_1d_from_db(symbol: str) -> pd.DataFrame:
+    """
+    public.prices テーブルから直近1年分の日足データを取得する。
+    取得失敗・データなしの場合は空の DataFrame を返す。
+    """
+    try:
+        import kabu_utils
+        from sqlalchemy import text
+
+        engine = kabu_utils.get_engine()
+        query = text("""
+            SELECT date, open, high, low, close, volume
+            FROM public.prices
+            WHERE symbol = :symbol
+              AND date >= CURRENT_DATE - INTERVAL '1 year'
+            ORDER BY date ASC
+        """)
+        with engine.connect() as conn:
+            df = pd.read_sql(query, conn, params={"symbol": str(symbol)})
+        engine.dispose()
+
+        if df.empty:
+            return pd.DataFrame()
+
+        df["date"] = pd.to_datetime(df["date"])
+        df["MA5"] = df["close"].rolling(window=5).mean()
+        df["MA20"] = df["close"].rolling(window=20).mean()
+        df["MA60"] = df["close"].rolling(window=60).mean()
+        return df
+    except Exception as e:
+        print(f"[DB] 日足データ取得エラー ({symbol}): {e}")
+        return pd.DataFrame()
 
 
 def prepare_for_chart(df: pd.DataFrame):
@@ -157,24 +200,24 @@ def fetch_data_from_api(symbol: str):
             }.get(name, name)
             errors.append(f"{label}の取得に失敗しました: {e}")
 
+    # history_1d は PostgreSQL から取得（その他はYahoo Finance API）
+    safe_call("history_1d", lambda: get_stock_history_1d_from_db(symbol))
+
     # Web API呼び出しを並列化して待ち時間を短縮しつつ、各APIはリトライする
-    with ThreadPoolExecutor(max_workers=5) as ex:
-        ex.submit(
-            safe_call,
-            "history_1d",
-            lambda: get_stock_history(symbol, period="1y", interval="1d").reset_index(),
-        )
+    with ThreadPoolExecutor(max_workers=4) as ex:
         ex.submit(
             safe_call,
             "history_5m",
             # 負荷軽減のため60d→20dに短縮（必要に応じて調整）
-            lambda: get_stock_history(symbol, period="60d", interval="5m").reset_index(),
+            lambda: get_stock_history(
+                symbol, period="60d", interval="5m").reset_index(),
         )
         ex.submit(
             safe_call,
             "history_1mo",
             # 必要ならperiodを短くすることも可能
-            lambda: get_stock_history(symbol, period="max", interval="1mo").reset_index(),
+            lambda: get_stock_history(
+                symbol, period="max", interval="1mo").reset_index(),
         )
         ex.submit(
             safe_call,
@@ -212,7 +255,8 @@ def build_financial_tables(financial_data: pd.DataFrame, all_financial_data: pd.
     # 列名を日本語に変換
     financial_data = financial_data.rename(columns=COLUMN_TRANSLATIONS)
     if all_financial_data is not None and not all_financial_data.empty:
-        all_financial_data = all_financial_data.rename(columns=COLUMN_TRANSLATIONS)
+        all_financial_data = all_financial_data.rename(
+            columns=COLUMN_TRANSLATIONS)
 
     # 生の財務データをHTMLに変換
     if all_financial_data is not None and not all_financial_data.empty:
@@ -232,7 +276,7 @@ def build_financial_tables(financial_data: pd.DataFrame, all_financial_data: pd.
     group_size = (len(columns) + 2) // 3  # 3つのグループに均等に分割
 
     for i in range(0, len(columns), group_size):
-        group_columns = columns[i : i + group_size]
+        group_columns = columns[i: i + group_size]
         group_data = financial_data[group_columns]
         financial_html += group_data.to_html(
             classes="table table-striped table-hover table-sm",
@@ -281,7 +325,8 @@ def index():
 
     if request.method == "POST":
         symbol = (request.form.get("symbol") or "").strip()
-        show_raw_data = request.form.get("show_raw_data", "false") == "true"  # チェックボックスの状態を取得
+        show_raw_data = request.form.get(
+            "show_raw_data", "false") == "true"  # チェックボックスの状態を取得
 
         if not symbol:
             errors.append("銘柄コードを入力してください。")
@@ -336,12 +381,16 @@ def index():
         chart2_df = prepare_for_chart(history_data2)
         chart3_df = prepare_for_chart(history_data3)
 
-        chart_html = create_candlestick(chart1_df, symbol, target_prices) if chart1_df is not None else ''
+        chart_html = create_candlestick(
+            chart1_df, symbol, target_prices) if chart1_df is not None else ''
         # 5分足チャートには1ヶ月レンジも重ねて表示
-        chart_html2 = create_candlestick(chart2_df, symbol, target_prices_5m) if chart2_df is not None else ''
-        chart_html3 = create_candlestick(chart3_df, symbol, target_prices) if chart3_df is not None else ''
-        linechart_html3 = create_lineChart(chart3_df, symbol) if chart3_df is not None else ''
-        
+        chart_html2 = create_candlestick(
+            chart2_df, symbol, target_prices_5m) if chart2_df is not None else ''
+        chart_html3 = create_candlestick(
+            chart3_df, symbol, target_prices) if chart3_df is not None else ''
+        linechart_html3 = create_lineChart(
+            chart3_df, symbol) if chart3_df is not None else ''
+
         if history_data is not None and not history_data.empty:
             # データを日付でソートし、順序を逆にする
             if "date" in history_data.columns:
@@ -349,7 +398,8 @@ def index():
                 try:
                     history_data = history_data.copy()
                     history_data["date"] = pd.to_datetime(history_data["date"])
-                    history_data = history_data.sort_values("date", ascending=False)
+                    history_data = history_data.sort_values(
+                        "date", ascending=False)
                 except Exception:
                     # 変換に失敗した場合はインデックスでフォールバック
                     history_data = history_data.sort_index(ascending=False)
@@ -372,7 +422,7 @@ def index():
         financial_html, financial_data_raw_html = build_financial_tables(
             financial_data, all_financial_data
         )
-            
+
         any_plot = any(
             [
                 chart_html,
@@ -399,7 +449,7 @@ def index():
             errors=errors,
             expected_ranges=expected_ranges,
         )
-    
+
     return render_template(
         "index.html",
         plot=False,
@@ -414,6 +464,99 @@ def index():
         symbol=symbol,
         errors=errors,
         expected_ranges=expected_ranges,
+    )
+
+
+# ──────────────────────────────────────────
+# バックテスト戦略探索ページ
+# ──────────────────────────────────────────
+@app.route("/backtest", methods=["GET", "POST"])
+def backtest():
+    symbol = ""
+    errors = []
+    result_json = None          # Plotly用JSON
+    table_html = ""
+    trade_count_total = 0
+
+    if request.method == "POST":
+        symbol = (request.form.get("symbol") or "").strip()
+        if not symbol:
+            errors.append("銘柄コードを入力してください。")
+        else:
+            try:
+                # 日足1年分を PostgreSQL から取得
+                raw = get_stock_history_1d_from_db(symbol)
+                if raw is None or raw.empty:
+                    errors.append(
+                        f"'{symbol}' のデータが取得できませんでした。DBに銘柄データが存在するか確認してください。")
+                else:
+                    result_df = run_all(raw)
+
+                    trade_count_total = int(result_df["trade_count"].sum())
+
+                    # ── テーブル用HTML生成 ──
+                    display_df = result_df[[
+                        "signal_name", "hold_days", "trade_count",
+                        "win_rate", "expected_value", "profit_factor",
+                        "avg_win", "avg_loss", "max_dd", "sharpe"
+                    ]].copy()
+                    display_df.columns = [
+                        "戦略名", "保有日数", "取引数",
+                        "勝率(%)", "期待値(%)", "PF",
+                        "平均利益(%)", "平均損失(%)", "最大DD(%)", "シャープ比"
+                    ]
+                    # 1行ずつ期待値でclassを付けるためにrecordsへ
+                    records = []
+                    for _, row in display_df.iterrows():
+                        ev = row["期待値(%)"]
+                        positive = isinstance(ev, float) and ev > 0
+                        records.append(
+                            {"positive": positive, "data": row.tolist()})
+                    table_html = records  # テンプレートへ渡す
+
+                    # ── Plotly 棒グラフ ──
+                    pivot = result_df.pivot_table(
+                        index="signal_name", columns="hold_days",
+                        values="expected_value", aggfunc="first"
+                    )
+                    fig = go.Figure()
+                    colors = ["#4C9BE8", "#5BC48A",
+                              "#F5A623", "#E05C5C", "#9B59B6"]
+                    for idx, col in enumerate(pivot.columns):
+                        fig.add_trace(go.Bar(
+                            name=f"{col}日保有",
+                            x=pivot.index.tolist(),
+                            y=pivot[col].tolist(),
+                            marker_color=colors[idx % len(colors)],
+                        ))
+                    fig.update_layout(
+                        barmode="group",
+                        title=f"{symbol} — シグナル別期待値（%）",
+                        xaxis_title="戦略",
+                        yaxis_title="期待値（%）",
+                        legend_title="保有日数",
+                        template="plotly_dark",
+                        height=500,
+                        margin=dict(l=20, r=20, t=50, b=120),
+                        xaxis=dict(tickangle=-30),
+                        shapes=[dict(
+                            type="line", x0=-0.5, x1=len(pivot.index) - 0.5,
+                            y0=0, y1=0, line=dict(color="white", width=1, dash="dot")
+                        )],
+                    )
+                    result_json = json.dumps(
+                        fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+            except Exception as e:
+                errors.append(f"バックテスト実行中にエラーが発生しました: {e}")
+
+    return render_template(
+        "backtest.html",
+        symbol=symbol,
+        errors=errors,
+        result_json=result_json,
+        table_html=table_html,
+        trade_count_total=trade_count_total,
     )
 
 
