@@ -195,13 +195,16 @@ def fetch_data_from_api(symbol: str):
     safe_call("history_1d", lambda: get_stock_history_1d_from_db(symbol))
 
     # Web API呼び出しを並列化して待ち時間を短縮しつつ、各APIはリトライする
-    with ThreadPoolExecutor(max_workers=5) as ex:
-        ex.submit(
-            safe_call,
-            "history_1d",
-            lambda: get_stock_history(
-                symbol, period="1y", interval="1d").reset_index(),
-        )
+    # NOTE: history_1d は上の get_stock_history_1d_from_db() で PostgreSQL から取得済みのため、
+    #       ここで API から再取得すると後勝ちで上書きされるバグが発生する。
+    #       DB取得を優先するためコメントアウト。API取得に戻す場合は上の safe_call("history_1d", ...) を削除すること。
+    with ThreadPoolExecutor(max_workers=4) as ex:
+        # ex.submit(
+        #     safe_call,
+        #     "history_1d",
+        #     lambda: get_stock_history(
+        #         symbol, period="1y", interval="1d").reset_index(),
+        # )
         ex.submit(
             safe_call,
             "history_5m",
