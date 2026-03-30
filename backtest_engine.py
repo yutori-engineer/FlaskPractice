@@ -170,16 +170,17 @@ def run_backtest(df: pd.DataFrame, signal: dict, hold_days: int) -> pd.DataFrame
             if i - entry_idx >= hold_days:
                 exit_price = opens[i] if i < n else closes[i - 1]
                 entry_price = opens[entry_idx]
-                ret_gross = (exit_price - entry_price) / entry_price
-                ret_net = ret_gross - 2 * COMMISSION
-                trades.append({
-                    "entry_date":  dates[entry_idx],
-                    "entry_price": round(entry_price, 2),
-                    "exit_date":   dates[i],
-                    "exit_price":  round(exit_price, 2),
-                    "ret":         round(ret_gross, 5),
-                    "ret_net":     round(ret_net, 5),
-                })
+                if entry_price > 0:
+                    ret_gross = (exit_price - entry_price) / entry_price
+                    ret_net = ret_gross - 2 * COMMISSION
+                    trades.append({
+                        "entry_date":  dates[entry_idx],
+                        "entry_price": round(entry_price, 2),
+                        "exit_date":   dates[i],
+                        "exit_price":  round(exit_price, 2),
+                        "ret":         round(ret_gross, 5),
+                        "ret_net":     round(ret_net, 5),
+                    })
                 entry_idx = None
 
         # エントリー判定（保有していないときのみ）
@@ -229,12 +230,13 @@ def summarize(trades_df: pd.DataFrame) -> dict:
     return {
         "trade_count":    int(len(rets)),
         "win_rate":       round(float(win_rate) * 100, 1) if win_rate is not None else None,
-        "expected_value": round(float(ev) * 100, 3),   # %表示
-        "profit_factor":  round(float(pf), 2) if pf != np.inf else None,
-        "avg_win":        round(float(avg_win) * 100, 3),
-        "avg_loss":       round(float(avg_loss) * 100, 3),
-        "max_dd":         round(float(max_dd) * 100, 2) if max_dd is not None else None,
-        "sharpe":         round(float(sharpe), 2) if sharpe is not None else None,
+        # %表示
+        "expected_value": round(float(ev) * 100, 3) if np.isfinite(ev) else None,
+        "profit_factor":  round(float(pf), 2) if np.isfinite(pf) else (99.9 if pf == np.inf else None),
+        "avg_win":        round(float(avg_win) * 100, 3) if np.isfinite(avg_win) else None,
+        "avg_loss":       round(float(avg_loss) * 100, 3) if np.isfinite(avg_loss) else None,
+        "max_dd":         round(float(max_dd) * 100, 2) if (max_dd is not None and np.isfinite(max_dd)) else None,
+        "sharpe":         round(float(sharpe), 2) if (sharpe is not None and np.isfinite(sharpe)) else None,
     }
 
 
